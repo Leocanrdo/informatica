@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>La mia scheda personale</title>
+        <style>
+            body{background-color:rgb(250, 235, 215);}
+	    h1{front-size:larger;color:red}
+	    p{font-size: larger;font-family: 'Times New Roman', Times, serif;}
+	    li{font-size: larger;font-family: 'Times New Roman', Times, serif;}
+		#foto{
+		width:400px;
+		position: relative;
+		left: 200px;
+		border: 2px solid #73AD21;
+		}
+        </style>
+    </head>
+    <body>
+        <h1>Scheda personale</h1>
+        <p>
+            <ul>
+                <li>Leonardo Campiello</li>
+                <li>3° B LSA</li>
+                <li>I.I.S. J.C. Maxwell</li>
+                <li>11 gennaio 2008</li>
+                <li>Garino</li>
+            </ul>
+        </p>
+        <p>
+            Sono Leonardo Campiello e vivo a Garino, penso di essere una persona simpatica e curiosa. Mi piace fare sport<br>
+		e amo  gli animali, ho 3 cani e 2 gatti .<br>
+            Un aspetto della mia vita che ritengo importante condividere è che ho sempre voglia di fare qualcosa<br>
+            per riuscire a rendermi utile per le persone a cui tengo.
+        </p>
+        <p>
+            Nel tempo libero mi piace fare sport, ho fatto ginnastica artistica per 13 anni e ho smesso l'anno scorso <br>
+			per iniziare pesistica, come sport pratico anche snowboard che è un'altra mia passione riguardo gli sport,<br>
+			ho iniziato da piccolo quando avevo 5 anni con mio padre e continuo ancora ora ad andarci.<br>
+			Un altra mia passione sono i video giochi, ci passo molte ore sia con i miei amici sia da solo <br>
+			anche solo per rilassarmi.<br>
+			Quando riesco cerco sempre di uscire con i miei amici<br>
+        </p>
+        <p>
+            In questi ultimi anni, ho sviluppato varie abilità:
+            <ul>
+                <li>Ho preso il brevetto da bagnino e per prenderlo ho dovuto fare un corso dove mi hanno insegnato a fare la RCP <br>
+				e sono anche abilitato all'uso del DAE.</li>
+                <li>La capacità di organizzarmi, con le superiori ho capito che avevo bisogno di trovare un modo per organizzare il mio tempo<br>
+				nel modo migliore. Ho iniziato solo dall'anno scorso e mi trovo già megilo.</li>
+                <li>metodo di studio, fino alle medie ho sempre studiato superficialmente ma dalle superiori ho capito che non bastava affatto e ho <br>
+				dovuto trovare un metodo di studio che mi permettese di andare avanti. Anche se non penso che sia ancora il metodo di studio definitivo<br>
+				che userò per sempre.</li>
+            </ul>
+        </p>
+        <p>
+            Dopo il diploma non so ancora bene cosa farò ma quasi  sicuramente frequenterò l'Università, anche se non mi è ancora ben chiara la<br>
+            facoltà che sceglierò (penso ingegneria, ma devo decidere nello specifico quale tipologia); dopo l'università, non<br>
+            so ancora cosa farò.
+        </p>
+        <p>
+            Una frase che ho sentito da bambino e che inspira sia me che mio fratello più grande è "La mente è come un paracadute,<br>
+			funziona solo se si apre" di Albert Einstein. Mi aiuta a ricordare che devo sempre essere curioso e non avere uno
+			stile mentale chiuso ma essere sempre pronto ad accettare i cambiamenti.<br>
+			<br>
+			
+            <div id="foto">
+				<img src="frase_einstein.jpeg" style="width:450px;height:400px;">
+            </div>
+        </p>
+    </body>
+</html>
