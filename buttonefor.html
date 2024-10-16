@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esercizi con Div e JavaScript</title>
+    <style>
+        
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .div-box {
+            width: 45%;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+
+        
+        .button {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        
+        .button-rosso {
+            background-color: red;
+        }
+        .button-blu {
+            background-color: blue;
+        }
+        .button-giallo {
+            background-color: yellow;
+            color: black;
+        }
+        .button-verde {
+            background-color: green;
+        }
+
+        
+        .button-rosso:hover {
+            background-color: darkred;
+        }
+        .button-blu:hover {
+            background-color: darkblue;
+        }
+        .button-giallo:hover {
+            background-color: gold;
+        }
+        .button-verde:hover {
+            background-color: darkgreen;
+        }
+
+        
+        .output {
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            white-space: pre-wrap; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="div-box" id="esercizio1">
+            <h2>Esercizio 1: Stampare numeri da 1 a 100</h2>
+            <button class="button button-rosso" onclick="stampaNumeri()">Clicca per stampare</button>
+            <div id="output1" class="output"></div>
+        </div>
+
+        
+        <div class="div-box" id="esercizio2">
+            <h2>Esercizio 2: Stampare numeri pari</h2>
+            <button class="button button-blu" onclick="stampaNumeriPari()">Clicca per stampare i numeri pari</button>
+            <div id="output2" class="output"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="div-box" id="esercizio3">
+            <h2>Esercizio 3: Stampare la tabellina del 9 fino a 1000</h2>
+            <button class="button button-giallo" onclick="stampaTabellinaDel9()">Clicca per stampare la tabellina del 9</button>
+            <div id="output3" class="output"></div>
+        </div>
+
+        
+        <div class="div-box" id="esercizio4">
+            <h2>Esercizio 4: Stampare 10 numeri casuali da 1 a 90</h2>
+            <button class="button button-verde" onclick="stampaNumeriCasuali()">Clicca per stampare numeri casuali</button>
+            <div id="output4" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        function stampaNumeri() {
+            var outputDiv = document.getElementById("output1");
+            outputDiv.textContent = ""; 
+
+            for (var i = 1; i <= 100; i++) {
+                outputDiv.textContent += i + '\n'; 
+            }
+        }
+
+        
+        function stampaNumeriPari() {
+            var outputDiv = document.getElementById("output2");
+            outputDiv.textContent = ""; 
+
+            for (var i = 2; i <= 100; i += 2) {
+                outputDiv.textContent += i + '\n'; 
+            }
+        }
+
+        
+        function stampaTabellinaDel9() {
+            var outputDiv = document.getElementById("output3");
+            outputDiv.textContent = ""; 
+
+            for (var i = 1; i <= 1000; i += 9) {
+                outputDiv.textContent += i + '\n'; 
+            }
+        }
+
+        
+        function stampaNumeriCasuali() {
+            var outputDiv = document.getElementById("output4");
+            outputDiv.textContent = ""; 
+
+            for (var i = 0; i < 10; i++) {
+                var numeroCasuale = Math.floor(Math.random() * 90) + 1; 
+                outputDiv.textContent += numeroCasuale + '\n'; 
+            }
+        }
+    </script>
+
+</body>
+</html>
 
