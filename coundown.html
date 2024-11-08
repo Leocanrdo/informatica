@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronometro con JavaScript</title>
 
+    <style>
+       #demo{font-size: 400px; text-align: center;}
+    </style>
+</head>
+<body>
+    <h1>
+        Cronometro con JavaScript
+    </h1>
+
+    <p id="demo"></p>
+
+   <script>
+let contatore = 4;
+const element = document.getElementById("demo");
+const temp1 = setInterval(stampaCIAO, 1000);
+
+function stampaCIAO() {
+    contatore--;
+    element.innerHTML = contatore + " ";
+    
+    if (contatore == 0) {
+        clearInterval(temp1);
+        window.open("https://www.youtube.com", "_blank"); 
+    }
+}
+   </script>
+
+</body>
+</html>
