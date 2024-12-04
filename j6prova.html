@@ -17,11 +17,21 @@
         #result {
             margin-top: 20px;
         }
+         #istruzioni{ 
+            float:left;
+            width:200px;
+         }
     </style>
 </head>
 <body>
+    <h1> Testa i tuoi riflessi </h1>
+    <div id="istruzioni"> questo gioco serve a sfidare i tuoi riflessi, ogni 5 secondi si 
+        attiva il bottone e cliccandolo segnerà il tempo che hai fatto, 
+        va cliccato ogni 5 secondi precisi. Alla fine darà il tempo medio 
+        dei tuoi riflessi.
+    </div>
     <div id="countdown">100.00</div>
-    <button id="captureButton" disabled>Capture Time</button>
+    <button id="captureButton" disabled>prendi il tempo</button>
     <div id="result"></div>
 
     <script>
@@ -30,7 +40,7 @@
         var captureButton = document.getElementById('captureButton');
         var resultElement = document.getElementById('result');
         var differences = [];
-        var targetTimes = [90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
+        var targetTimes = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 0];
         var nextTargetIndex = 0;
 
         function formatCountdown(num) {
@@ -40,7 +50,7 @@
         var interval = setInterval(function() {
             countdown -= 0.01;
             countdownElement.textContent = formatCountdown(countdown);
-   
+
             if (nextTargetIndex < targetTimes.length && countdown <= targetTimes[nextTargetIndex]) {
                 captureButton.disabled = false;
             }
@@ -49,6 +59,7 @@
                 clearInterval(interval);
                 countdownElement.textContent = "0.00";
                 displayTotalDifference();
+                displayAverageDifference(); 
             }
         }, 10);
 
@@ -57,21 +68,36 @@
                 var targetTime = targetTimes[nextTargetIndex];
                 var currentTime = parseFloat(countdown.toFixed(2));
                 var difference = (targetTime - currentTime).toFixed(2);
-                
+
                 differences.push(difference);
                 resultElement.innerHTML += "<p>Obiettivo: " + targetTime + ", Catturato: " + currentTime + ", Differenza: " + difference + "</p>";
 
                 nextTargetIndex++;
                 captureButton.disabled = true;
+
+                
+                displayAverageDifference();
             }
         });
 
+        
         function displayTotalDifference() {
             var totalDifference = differences.reduce(function(sum, diff) {
                 return sum + parseFloat(diff);
             }, 0).toFixed(2);
 
             resultElement.innerHTML += "<p><strong>Somma totale delle differenze: " + totalDifference + "</strong></p>";
+        }
+
+        
+        function displayAverageDifference() {
+            if (differences.length > 0) {
+                var totalDifference = differences.reduce(function(sum, diff) {
+                    return sum + parseFloat(diff);
+                }, 0);
+                var averageDifference = (totalDifference / differences.length).toFixed(2);
+                resultElement.innerHTML += "<p><strong>Media delle differenze: " + averageDifference + "</strong></p>";
+            }
         }
     </script>
 </body>
