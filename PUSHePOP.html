@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Lista della Spesa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px;
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .remove-btn {
+            background-color: #f44336;
+        }
+        .remove-btn:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lista della Spesa</h1>
+    <ul id="listaSpesa"></ul>
+
+    <div>
+        <button onclick="aggiungiArticolo()">Aggiungi Articolo</button>
+        <button onclick="rimuoviArticolo()">Rimuovi Ultimo Articolo</button>
+    </div>
+
+    <script>
+        // Creazione di un array vuoto
+        let listaDellaSpesa = [];
+
+        // Funzione per aggiungere un articolo alla lista
+        function aggiungiArticolo() {
+            // Chiediamo all'utente di inserire un articolo
+            let articolo = prompt("Inserisci un articolo per la lista della spesa:");
+           
+            if (articolo) {
+                // Aggiungiamo l'articolo all'array con push()
+                listaDellaSpesa.push(articolo);
+                aggiornaLista();
+            } else {
+                alert("Non hai inserito nulla.");
+            }
+        }
+
+        // Funzione per rimuovere l'ultimo articolo dalla lista
+        function rimuoviArticolo() {
+            if (listaDellaSpesa.length > 0) {
+                // Rimuoviamo l'ultimo articolo con pop()
+                let articoloRimosso = listaDellaSpesa.pop();
+                alert("Hai rimosso: " + articoloRimosso);
+                aggiornaLista();
+            } else {
+                alert("La lista è già vuota!");
+            }
+        }
+
+        // Funzione per aggiornare la lista visualizzata nell'interfaccia
+        function aggiornaLista() {
+            // Selezioniamo la lista nel DOM
+            let listaUl = document.getElementById("listaSpesa");
+            listaUl.innerHTML = ""; // Svuotiamo la lista prima di aggiornarla
+
+            // Aggiungiamo ogni articolo dell'array come un elemento <li>
+            listaDellaSpesa.forEach(function(articolo, index) {
+                let li = document.createElement("li");
+                li.textContent = articolo;
+                listaUl.appendChild(li);
+            });
+        }
+    </script>
+
+</body>
+</html>
