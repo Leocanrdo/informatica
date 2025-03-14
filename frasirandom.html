@@ -1,0 +1,29 @@
+let soggetti = ["Mario", "Luca", "Giulia", "Anna", "Francesco", "Elena", "Roberto", "Sara", "Davide", "Chiara"];
+let verbi = ["mangia", "corre", "legge", "scrive", "disegna", "parla", "cammina", "guarda", "ascolta", "gioca"];
+let complemento = ["una mela", "nel parco", "un libro", "una lettera", "un quadro", "al telefono", "sul marciapiede", "la TV", "musica", "a calcio"];
+
+// Funzione per generare le combinazioni fino a un massimo specificato
+function generaCombinazioniLimitate(soggetti, verbi, complemento, maxCombinazioni) {
+    let combinazioni = [];
+    let count = 0;
+
+    for (let soggetto of soggetti) {
+        for (let verbo of verbi) {
+            for (let compl of complemento) {
+                combinazioni.push(`${soggetto} ${verbo} ${compl}`);
+                count++;
+                if (count >= maxCombinazioni) {
+                    return combinazioni; // Stoppa quando raggiunge il limite
+                }
+            }
+        }
+    }
+    return combinazioni;
+}
+
+// Genera solo le prime 100 combinazioni
+let prime100Combinazioni = generaCombinazioniLimitate(soggetti, verbi, complemento, 100);
+
+// Stampa le prime 100 combinazioni
+console.log("Prime 100 combinazioni possibili:");
+console.log(prime100Combinazioni);
