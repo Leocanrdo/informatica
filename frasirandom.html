@@ -1,29 +1,62 @@
-let soggetti = ["Mario", "Luca", "Giulia", "Anna", "Francesco", "Elena", "Roberto", "Sara", "Davide", "Chiara"];
-let verbi = ["mangia", "corre", "legge", "scrive", "disegna", "parla", "cammina", "guarda", "ascolta", "gioca"];
-let complemento = ["una mela", "nel parco", "un libro", "una lettera", "un quadro", "al telefono", "sul marciapiede", "la TV", "musica", "a calcio"];
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Combinazioni</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generatore di Combinazioni Possibili</h1>
+    <p>Clicca il pulsante per generare le prime 100 combinazioni di soggetti, verbi e complementi.</p>
+    <button onclick="generaCombinazioni()">Genera Combinazioni</button>
+    <div id="combinazioni" class="output"></div>
 
-// Funzione per generare le combinazioni fino a un massimo specificato
-function generaCombinazioniLimitate(soggetti, verbi, complemento, maxCombinazioni) {
-    let combinazioni = [];
-    let count = 0;
+    <script>
+        let soggetti = ["Mario", "Luca", "Giulia", "Anna", "Francesco", "Elena", "Roberto", "Sara", "Davide", "Chiara"];
+        let verbi = ["mangia", "corre", "legge", "scrive", "disegna", "parla", "cammina", "guarda", "ascolta", "gioca"];
+        let complemento = ["una mela", "nel parco", "un libro", "una lettera", "un quadro", "al telefono", "sul marciapiede", "la TV", "musica", "a calcio"];
 
-    for (let soggetto of soggetti) {
-        for (let verbo of verbi) {
-            for (let compl of complemento) {
-                combinazioni.push(`${soggetto} ${verbo} ${compl}`);
-                count++;
-                if (count >= maxCombinazioni) {
-                    return combinazioni; // Stoppa quando raggiunge il limite
+        // Funzione per generare le combinazioni fino a un massimo specificato
+        function generaCombinazioniLimitate(soggetti, verbi, complemento, maxCombinazioni) {
+            let combinazioni = [];
+            let count = 0;
+
+            for (let soggetto of soggetti) {
+                for (let verbo of verbi) {
+                    for (let compl of complemento) {
+                        combinazioni.push(`${soggetto} ${verbo} ${compl}`);
+                        count++;
+                        if (count >= maxCombinazioni) {
+                            return combinazioni; // Stoppa quando raggiunge il limite
+                        }
+                    }
                 }
             }
+            return combinazioni;
         }
-    }
-    return combinazioni;
-}
 
-// Genera solo le prime 100 combinazioni
-let prime100Combinazioni = generaCombinazioniLimitate(soggetti, verbi, complemento, 100);
-
-// Stampa le prime 100 combinazioni
-console.log("Prime 100 combinazioni possibili:");
-console.log(prime100Combinazioni);
+        // Funzione che genera e visualizza le combinazioni
+        function generaCombinazioni() {
+            let prime100Combinazioni = generaCombinazioniLimitate(soggetti, verbi, complemento, 100);
+            let outputDiv = document.getElementById("combinazioni");
+            outputDiv.innerHTML = prime100Combinazioni.join("<br>");
+        }
+    </script>
+</body>
+</html>
