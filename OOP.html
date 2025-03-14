@@ -1,0 +1,64 @@
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form con POST e GET</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Modulo con Metodo POST</h1>
+        <form action="action_post.html" method="POST">
+            <div class="mb-3">
+                <label for="nickname" class="form-label">Nickname</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" required="">
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Messaggio</label>
+                <textarea class="form-control" id="message" name="message" required=""></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="public_private" class="form-label">Pubblico o Privato</label>
+                <select class="form-control" id="public_private" name="public_private" required="">
+                    <option value="public">Pubblico</option>
+                    <option value="private">Privato</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        
+        <h1 class="mt-5">Modulo con Metodo GET</h1>
+        <form action="action_get.html" method="GET">
+            <div class="mb-3">
+                <label for="nickname_get" class="form-label">Nickname</label>
+                <input type="text" class="form-control" id="nickname_get" name="nickname" required="">
+            </div>
+            <div class="mb-3">
+                <label for="message_get" class="form-label">Messaggio</label>
+                <textarea class="form-control" id="message_get" name="message" required=""></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="public_private_get" class="form-label">Pubblico o Privato</label>
+                <select class="form-control" id="public_private_get" name="public_private" required="">
+                    <option value="public">Pubblico</option>
+                    <option value="private">Privato</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function() {
+            let params = new URLSearchParams(location.search);
+            if (params.has('nickname')) {
+                document.body.innerHTML += `<p>Nickname: ${params.get('nickname')}</p>`;
+                document.body.innerHTML += `<p>Messaggio: ${params.get('message')}</p>`;
+                document.body.innerHTML += `<p>Pubblico o Privato: ${params.get('public_private')}</p>`;
+            }
+        }
+    </script>
+
+
+</body>
+</html>
