@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <h1>Generatore di Combinazioni Possibili</h1>
+    <h1>Generatore frasi random</h1>
     <p>Clicca il pulsante per generare le prime 100 combinazioni di soggetti, verbi e complementi.</p>
     <button onclick="generaCombinazioni()">Genera Combinazioni</button>
     <div id="combinazioni" class="output"></div>
@@ -32,7 +32,7 @@
         let verbi = ["mangia", "corre", "legge", "scrive", "disegna", "parla", "cammina", "guarda", "ascolta", "gioca"];
         let complemento = ["una mela", "nel parco", "un libro", "una lettera", "un quadro", "al telefono", "sul marciapiede", "la TV", "musica", "a calcio"];
 
-        // Funzione per generare le combinazioni fino a un massimo specificato
+       
         function generaCombinazioniLimitate(soggetti, verbi, complemento, maxCombinazioni) {
             let combinazioni = [];
             let count = 0;
@@ -43,7 +43,7 @@
                         combinazioni.push(`${soggetto} ${verbo} ${compl}`);
                         count++;
                         if (count >= maxCombinazioni) {
-                            return combinazioni; // Stoppa quando raggiunge il limite
+                            return combinazioni; 
                         }
                     }
                 }
@@ -51,7 +51,7 @@
             return combinazioni;
         }
 
-        // Funzione che genera e visualizza le combinazioni
+       
         function generaCombinazioni() {
             let prime100Combinazioni = generaCombinazioniLimitate(soggetti, verbi, complemento, 100);
             let outputDiv = document.getElementById("combinazioni");
