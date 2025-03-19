@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>calcoli stringhe</title>
-    <style>
-        
     <script>
         function calcolaLunghezza() {
             const stringA = document.getElementById("stringA").value;
             const stringB = document.getElementById("stringB").value;
-
+            
             document.getElementById("result").innerHTML = `Lunghezza di A: ${stringA.length}, Lunghezza di B: ${stringB.length}`;
         }
 
         function invertiStringa() {
             const stringA = document.getElementById("stringA").value;
             const stringB = document.getElementById("stringB").value;
-            
+
             document.getElementById("result").innerHTML = `Stringa A invertita: ${stringA.split('').reverse().join('')}, Stringa B invertita: ${stringB.split('').reverse().join('')}`;
         }
 
@@ -35,7 +33,6 @@
             const somma = stringA.length + stringB.length;
             let messaggio = `Somma delle lunghezze: ${somma}`;
 
-            // Aggiunge un messaggio se la lunghezza della stringa B è troppo lunga
             if (stringB.length > 20) {
                 messaggio += " - Stringa B troppo lunga";
             }
@@ -62,4 +59,3 @@
     <div id="result" class="result"></div>
 </body>
 </html>
-
