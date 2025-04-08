@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generazione Numeri Casuali</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Generazione di Numeri Casuali e Grafico</h1>
+    
+    <div>
+        <canvas id="myChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        let ArrayNumeriCasuali = [];
+        let rapportoArray = [];
+        let L1 = 0, L2 = 1; // Range tra 0 e 1
+        let mediaArray = [];
+        let contatore = 0;
+
+        // Funzione per generare numeri casuali tra 0 e 1
+        function generaNumeroCasuale() {
+            return Math.random();
+        }
+
+        // Funzione per calcolare la distanza dal centro del range
+        function calcolaDistanza(num) {
+            let centro = (L2 - L1) / 2;
+            return Math.abs(num - centro);
+        }
+
+        // Funzione per calcolare la media di un array
+        function calcolaMedia(array) {
+            let somma = array.reduce((acc, val) => acc + val, 0);
+            return somma / array.length;
+        }
+
+        // Intervallo per generare numeri ogni 500 ms
+        let intervalId = setInterval(() => {
+            // Genera un numero casuale
+            let numeroCasuale = generaNumeroCasuale();
+            ArrayNumeriCasuali.push(numeroCasuale);
+
+            // Calcola il rapporto con il numero precedente
+            if (ArrayNumeriCasuali.length > 1) {
+                let rapporto = numeroCasuale / ArrayNumeriCasuali[ArrayNumeriCasuali.length - 2];
+                rapportoArray.push(rapporto);
+            }
+
+            // Calcola la distanza dalla metà del range
+            let distanza = calcolaDistanza(numeroCasuale);
+
+            // Ogni 50 numeri, calcola la media
+            contatore++;
+            if (contatore % 50 === 0) {
+                let media = calcolaMedia(ArrayNumeriCasuali.slice(-50));  // Media degli ultimi 50 numeri
+                mediaArray.push(media);
+                console.log(`Media degli ultimi 50 numeri: ${media}`);
+            }
+
+            // Visualizzazione in console del numero casuale e distanza dalla metà del range
+            console.log(`Numero casuale: ${numeroCasuale}, Distanza dalla metà del range: ${distanza}`);
+
+        }, 500);
+
+        // Codice per utilizzare Chart.js
+        function creaGrafico() {
+            let ctx = document.getElementById('myChart').getContext('2d');
+            let chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ArrayNumeriCasuali.map((_, index) => index),
+                    datasets: [{
+                        label: 'Numeri Casuali',
+                        data: ArrayNumeriCasuali,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tempo (ms)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Valore Numerico'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Funzione per fermare il setInterval dopo un certo numero di cicli (per esempio dopo 10 secondi)
+        setTimeout(() => {
+            clearInterval(intervalId);
+            console.log('Generazione numeri casuali fermata');
+            creaGrafico(); // Crea il grafico una volta fermato l'intervallo
+        }, 10000); // 10 secondi
+
+    </script>
+</body>
+</html>
