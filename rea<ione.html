@@ -40,6 +40,11 @@
       background-color: #f9f9f9;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
+    .user-info-box {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+    }
     button {
       padding: 10px 20px;
       font-size: 16px;
@@ -59,18 +64,30 @@
 <body>
 
 <div class="content">
-  <h1>Test di Reazione - Colori</h1>
-  
-  <button id="startButton" onclick="startTest()">Premi per estrarre un colore</button>
-  
-  <div id="targetColor"></div>
-  
-  <div class="color-grid" id="colorGrid"></div>
+  <!-- User Info Form -->
+  <div id="userInfo" class="user-info-box">
+    <h2>Benvenuto! Inserisci il tuo nome, cognome ed età</h2>
+    <input type="text" id="userName" placeholder="Nome" required>
+    <input type="text" id="userSurname" placeholder="Cognome" required>
+    <input type="number" id="userAge" placeholder="Età" required>
+    <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button>
+  </div>
+
+  <!-- Test Content -->
+  <div id="testContent" style="display:none;">
+    <h1>Test di Reazione - Colori</h1>
+    <button id="startButton" onclick="startTest()">Premi per estrarre un colore</button>
+    <div id="targetColor"></div>
+    <div class="color-grid" id="colorGrid"></div>
+  </div>
 </div>
 
+<!-- Reaction Time and Average Display -->
 <div class="reaction-box">
   <h3>Tempo di Reazione</h3>
   <p id="reactionTimeDisplay">Nessun dato disponibile</p>
+  <h3>Media dei Tempi</h3>
+  <p id="averageTimeDisplay">Nessuna media disponibile</p>
 </div>
 
 <script>
@@ -78,11 +95,32 @@
   const reactionTimes = [];
   let startTime = null;
   let correctColor = null;
+  let userName = "";
+  let userSurname = "";
+  let userAge = "";
 
+  // Funzione per mescolare un array
   function shuffle(array) {
     return array.sort(() => Math.random() - 0.5);
   }
 
+  // Funzione per salvare le informazioni dell'utente
+  function saveUserInfo() {
+    userName = document.getElementById("userName").value;
+    userSurname = document.getElementById("userSurname").value;
+    userAge = document.getElementById("userAge").value;
+
+    // Controlla se i dati sono stati inseriti correttamente
+    if (userName && userSurname && userAge) {
+      document.getElementById("userInfo").style.display = "none"; // Nascondi il form
+      document.getElementById("testContent").style.display = "block"; // Mostra il test
+      alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`);
+    } else {
+      alert("Per favore, compila tutti i campi.");
+    }
+  }
+
+  // Funzione per avviare il test
   function startTest() {
     // Disabilita il pulsante per evitare che venga cliccato più volte
     document.getElementById("startButton").disabled = true;
@@ -110,21 +148,22 @@
     startTime = performance.now();
   }
 
+  // Funzione per gestire il click su un colore
   function handleClick(clickedColor) {
     const endTime = performance.now();
     const reactionTime = (endTime - startTime) / 1000; // Tempo in secondi
 
-    // Mostra il tempo di reazione
+    // Mostra il tempo di reazione nella pagina
     document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} secondi`;
 
-    if (clickedColor === correctColor) {
-      reactionTimes.push(reactionTime);
-      alert(`Corretto! Tempo di reazione: ${reactionTime.toFixed(3)} secondi`);
-    } else {
-      alert("Colore sbagliato! Ritenta.");
-    }
+    // Aggiungi il tempo alla lista dei tempi
+    reactionTimes.push(reactionTime);
 
-    console.log("Tempi di reazione finora:", reactionTimes);
+    // Calcola la media dei tempi di reazione
+    const averageTime = reactionTimes.reduce((acc, time) => acc + time, 0) / reactionTimes.length;
+
+    // Mostra la media dei tempi nella pagina
+    document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} secondi`;
 
     // Riabilita il pulsante per il prossimo round
     document.getElementById("startButton").disabled = false;
@@ -133,4 +172,3 @@
 
 </body>
 </html>
-
