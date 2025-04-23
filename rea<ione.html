@@ -33,17 +33,50 @@
       margin-bottom: 10px;
     }
     .reaction-box {
+      width: 300px<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Test di Reazione - Colori</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 50px;
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+    .content {
+      text-align: center;
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .color-box {
+      width: 100px;
+      height: 100px;
+      background-color: red;
+      cursor: pointer;
+      border: 2px solid #333;
+    }
+    .green {
+      background-color: green !important;
+    }
+    .reaction-box {
       width: 300px;
       padding: 20px;
       border: 1px solid #333;
       text-align: center;
       background-color: #f9f9f9;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .user-info-box {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
     button {
       padding: 10px 20px;
@@ -58,6 +91,14 @@
     button:disabled {
       background-color: #ccc;
       cursor: not-allowed;
+    }
+    #countdown {
+      font-size: 32px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #userInfo {
+      display: none;
     }
   </style>
 </head>
@@ -76,33 +117,31 @@
   <!-- Test Content -->
   <div id="testContent" style="display:none;">
     <h1>Test di Reazione - Colori</h1>
-    <button id="startButton" onclick="startTest()">Premi per estrarre un colore</button>
-    <div id="targetColor"></div>
+    <button id="startButton" onclick="startCountdown()">Inizia il Test</button>
+    <div id="countdown"></div>
     <div class="color-grid" id="colorGrid"></div>
   </div>
 </div>
 
-<!-- Reaction Time and Average Display -->
+<!-- Reaction Time and Results -->
 <div class="reaction-box">
   <h3>Tempo di Reazione</h3>
   <p id="reactionTimeDisplay">Nessun dato disponibile</p>
   <h3>Media dei Tempi</h3>
   <p id="averageTimeDisplay">Nessuna media disponibile</p>
+  <h3>Risultati</h3>
+  <ul id="resultList"></ul>
 </div>
 
 <script>
-  const colors = ["red", "blue", "green", "yellow"];
   const reactionTimes = [];
   let startTime = null;
-  let correctColor = null;
+  let correctBox = null;
+  let countdownInterval = null;
+  let countdownValue = 3;
   let userName = "";
   let userSurname = "";
   let userAge = "";
-
-  // Funzione per mescolare un array
-  function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
-  }
 
   // Funzione per salvare le informazioni dell'utente
   function saveUserInfo() {
@@ -110,7 +149,6 @@
     userSurname = document.getElementById("userSurname").value;
     userAge = document.getElementById("userAge").value;
 
-    // Controlla se i dati sono stati inseriti correttamente
     if (userName && userSurname && userAge) {
       document.getElementById("userInfo").style.display = "none"; // Nascondi il form
       document.getElementById("testContent").style.display = "block"; // Mostra il test
@@ -120,53 +158,70 @@
     }
   }
 
-  // Funzione per avviare il test
-  function startTest() {
-    // Disabilita il pulsante per evitare che venga cliccato più volte
+  // Funzione per avviare il countdown
+  function startCountdown() {
+    // Disabilita il pulsante mentre il countdown è attivo
     document.getElementById("startButton").disabled = true;
+    document.getElementById("countdown").textContent = countdownValue;
+    
+    countdownInterval = setInterval(() => {
+      countdownValue--;
+      document.getElementById("countdown").textContent = countdownValue;
 
-    // Mescola e scegli il colore giusto
-    const shuffledColors = shuffle([...colors]);
-    correctColor = shuffledColors[Math.floor(Math.random() * shuffledColors.length)];
+      if (countdownValue <= 0) {
+        clearInterval(countdownInterval);
+        countdownValue = 3;
+        showColorGrid(); // Mostra la griglia dopo il countdown
+      }
+    }, 1000);
+  }
 
-    // Mostra quale colore cliccare
-    document.getElementById("targetColor").textContent = `Clicca il colore: ${correctColor.toUpperCase()}`;
-
-    // Crea i box colorati
+  // Funzione per creare la griglia e farla interagire
+  function showColorGrid() {
     const grid = document.getElementById("colorGrid");
     grid.innerHTML = ""; // Pulisce la griglia
 
-    shuffledColors.forEach(color => {
+    // Crea una griglia 3x3 di quadrati rossi
+    for (let i = 0; i < 9; i++) {
       const box = document.createElement("div");
       box.classList.add("color-box");
-      box.style.backgroundColor = color;
-      box.onclick = () => handleClick(color);
+      box.onclick = () => handleBoxClick(box, i);
       grid.appendChild(box);
-    });
+    }
 
-    // Avvia il timer
+    // Scegli un quadrato casuale e fallo diventare verde
+    const randomIndex = Math.floor(Math.random() * 9);
+    correctBox = grid.children[randomIndex];
+    correctBox.classList.add("green");
     startTime = performance.now();
   }
 
-  // Funzione per gestire il click su un colore
-  function handleClick(clickedColor) {
+  // Funzione per gestire il clic su un quadrato
+  function handleBoxClick(box, index) {
     const endTime = performance.now();
     const reactionTime = (endTime - startTime) / 1000; // Tempo in secondi
 
-    // Mostra il tempo di reazione nella pagina
-    document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} secondi`;
+    // Controlla se è stato cliccato il quadrato verde
+    if (box === correctBox) {
+      reactionTimes.push(reactionTime);
+      document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} secondi`;
 
-    // Aggiungi il tempo alla lista dei tempi
-    reactionTimes.push(reactionTime);
+      // Calcola la media dei tempi di reazione
+      const averageTime = reactionTimes.reduce((acc, time) => acc + time, 0) / reactionTimes.length;
+      document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} secondi`;
 
-    // Calcola la media dei tempi di reazione
-    const averageTime = reactionTimes.reduce((acc, time) => acc + time, 0) / reactionTimes.length;
+      // Aggiungi il risultato alla lista dei risultati
+      const resultItem = document.createElement("li");
+      resultItem.textContent = `Reazione: ${reactionTime.toFixed(3)} secondi`;
+      document.getElementById("resultList").appendChild(resultItem);
+    } else {
+      document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`;
+    }
 
-    // Mostra la media dei tempi nella pagina
-    document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} secondi`;
-
-    // Riabilita il pulsante per il prossimo round
-    document.getElementById("startButton").disabled = false;
+    // Resetta la griglia e il countdown
+    setTimeout(() => {
+      showColorGrid();
+    }, 1000);
   }
 </script>
 
