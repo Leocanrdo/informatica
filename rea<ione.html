@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Test di Reazione - Colori</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .color-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .color-box {
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      border: 2px solid #333;
+    }
+    #targetColor {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Test di Reazione - Colori</h1>
+<div id="targetColor">Clicca il colore: </div>
+<div class="color-grid" id="colorGrid"></div>
+
+<script>
+  const colors = ["red", "blue", "green", "yellow"];
+  const reactionTimes = [];
+  let startTime = null;
+  let correctColor = null;
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function startTest() {
+    // Mescola e scegli il colore giusto
+    const shuffledColors = shuffle([...colors]);
+    correctColor = shuffledColors[Math.floor(Math.random() * shuffledColors.length)];
+
+    // Mostra quale colore cliccare
+    document.getElementById("targetColor").textContent = `Clicca il colore: ${correctColor.toUpperCase()}`;
+
+    // Crea i box colorati
+    const grid = document.getElementById("colorGrid");
+    grid.innerHTML = ""; // Pulisce la griglia
+
+    shuffledColors.forEach(color => {
+      const box = document.createElement("div");
+      box.classList.add("color-box");
+      box.style.backgroundColor = color;
+      box.onclick = () => handleClick(color);
+      grid.appendChild(box);
+    });
+
+    // Avvia il timer
+    startTime = performance.now();
+  }
+
+  function handleClick(clickedColor) {
+    const endTime = performance.now();
+    const reactionTime = endTime - startTime;
+
+    if (clickedColor === correctColor) {
+      reactionTimes.push(reactionTime);
+      alert(`Corretto! Tempo di reazione: ${reactionTime.toFixed(2)} ms`);
+    } else {
+      alert("Colore sbagliato! Ritenta.");
+    }
+
+    console.log("Tempi di reazione finora:", reactionTimes);
+    startTest(); // Inizia il prossimo round
+  }
+
+  // Avvia il primo test
+  startTest();
+</script>
+
+</body>
+</html>
