@@ -9,16 +9,14 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 50px;
-      padding-left: 50px;
-      padding-right: 50px;
+      padding: 50px;
     }
     .content {
       text-align: center;
     }
     .color-grid {
       display: grid;
-      grid-template-columns: repeat(3, 80px); /* 3 colonne */
+      grid-template-columns: repeat(3, 80px);
       grid-gap: 10px;
       justify-content: center;
       margin-top: 20px;
@@ -50,7 +48,7 @@
       color: white;
       border: none;
       border-radius: 5px;
-      margin-bottom: 20px;
+      margin: 10px 5px;
     }
     button:disabled {
       background-color: #ccc;
@@ -61,8 +59,11 @@
       margin-top: 20px;
       font-weight: bold;
     }
-    #userInfo {
-      display: none;
+    .user-info-box input {
+      display: block;
+      margin: 10px auto;
+      padding: 8px;
+      width: 200px;
     }
   </style>
 </head>
@@ -72,9 +73,15 @@
   <!-- User Info Form -->
   <div id="userInfo" class="user-info-box">
     <h2>Benvenuto! Inserisci il tuo nome, cognome ed età</h2>
+    <label for="userName">Nome</label>
     <input type="text" id="userName" placeholder="Nome" required>
+
+    <label for="userSurname">Cognome</label>
     <input type="text" id="userSurname" placeholder="Cognome" required>
+
+    <label for="userAge">Età</label>
     <input type="number" id="userAge" placeholder="Età" required>
+
     <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button>
   </div>
 
@@ -107,85 +114,94 @@
   let userSurname = "";
   let userAge = "";
 
-  // Funzione per salvare le informazioni dell'utente
+  let attemptCount = 0;
+  const maxAttempts = 5;
+  let canClick = false;
+
   function saveUserInfo() {
-    userName = document.getElementById("userName").value;
-    userSurname = document.getElementById("userSurname").value;
-    userAge = document.getElementById("userAge").value;
+    userName = document.getElementById("userName").value.trim();
+    userSurname = document.getElementById("userSurname").value.trim();
+    userAge = document.getElementById("userAge").value.trim();
 
     if (userName && userSurname && userAge) {
-      document.getElementById("userInfo").style.display = "none"; // Nascondi il form
-      document.getElementById("testContent").style.display = "block"; // Mostra il test
+      document.getElementById("userInfo").style.display = "none";
+      document.getElementById("testContent").style.display = "block";
       alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`);
     } else {
       alert("Per favore, compila tutti i campi.");
     }
   }
 
-  // Funzione per avviare il countdown
   function startCountdown() {
-    // Disabilita il pulsante mentre il countdown è attivo
+    if (attemptCount >= maxAttempts) {
+      alert("Hai già completato tutti i tentativi.");
+      return;
+    }
+
     document.getElementById("startButton").disabled = true;
     document.getElementById("countdown").textContent = countdownValue;
-    
+
     countdownInterval = setInterval(() => {
       countdownValue--;
       document.getElementById("countdown").textContent = countdownValue;
 
       if (countdownValue <= 0) {
         clearInterval(countdownInterval);
+        document.getElementById("countdown").textContent = "";
         countdownValue = 3;
-        showColorGrid(); // Mostra la griglia dopo il countdown
+        showColorGrid();
       }
     }, 1000);
   }
 
-  // Funzione per creare la griglia e farla interagire
   function showColorGrid() {
     const grid = document.getElementById("colorGrid");
-    grid.innerHTML = ""; // Pulisce la griglia
+    grid.innerHTML = "";
+    canClick = true;
 
-    // Crea una griglia 3x3 di quadrati rossi
     for (let i = 0; i < 9; i++) {
       const box = document.createElement("div");
       box.classList.add("color-box");
-      box.onclick = () => handleBoxClick(box, i);
+      box.onclick = () => handleBoxClick(box);
       grid.appendChild(box);
     }
 
-    // Scegli un quadrato casuale e fallo diventare verde
     const randomIndex = Math.floor(Math.random() * 9);
     correctBox = grid.children[randomIndex];
     correctBox.classList.add("green");
     startTime = performance.now();
   }
 
-  // Funzione per gestire il clic su un quadrato
-  function handleBoxClick(box, index) {
-    const endTime = performance.now();
-    const reactionTime = (endTime - startTime) / 1000; // Tempo in secondi
+  function handleBoxClick(box) {
+    if (!canClick) return;
+    canClick = false;
 
-    // Controlla se è stato cliccato il quadrato verde
+    const endTime = performance.now();
+    const reactionTime = (endTime - startTime) / 1000;
+
     if (box === correctBox) {
       reactionTimes.push(reactionTime);
-      document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} secondi`;
+      attemptCount++;
 
-      // Calcola la media dei tempi di reazione
-      const averageTime = reactionTimes.reduce((acc, time) => acc + time, 0) / reactionTimes.length;
-      document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} secondi`;
+      document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} s`;
 
-      // Aggiungi il risultato alla lista dei risultati
+      const averageTime = reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length;
+      document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} s`;
+
       const resultItem = document.createElement("li");
-      resultItem.textContent = `Reazione: ${reactionTime.toFixed(3)} secondi`;
+      resultItem.textContent = `Tentativo ${attemptCount}: ${reactionTime.toFixed(3)} s`;
       document.getElementById("resultList").appendChild(resultItem);
     } else {
       document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`;
     }
 
-    // Resetta la griglia e il countdown
-    setTimeout(() => {
-      showColorGrid();
-    }, 1000);
+    if (attemptCount < maxAttempts) {
+      setTimeout(() => {
+        document.getElementById("startButton").disabled = false;
+      }, 500);
+    } else {
+      alert("Hai completato il test! Bravo!");
+    }
   }
 </script>
 
