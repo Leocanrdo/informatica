@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestione Fabbrica di Graffette</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    button { margin: 5px; padding: 10px; }
+    #output { margin-top: 20px; white-space: pre-line; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+  <h1>Fabbrica di Graffette</h1>
+  <button onclick="factory.startProduction()">Avvia Produzione</button>
+  <button onclick="factory.stopProduction()">Ferma Produzione</button>
+  <button onclick="factory.resetProduction()">Reset Conta</button>
+  <button onclick="factory.boostProduction(3, 5)">Boost x3 per 5s</button>
+  <button onclick="mostraStato()">Stato</button>
+
+  <div id="output"></div>
+
+  <script>
+    class ClipProducer {
+      constructor(name, productionRatePerSecond) {
+        this.name = name;
+        this.productionRate = productionRatePerSecond;
+        this.totalClips = 0;
+        this.running = false;
+        this._intervalId = null;
+      }
+
+      startProduction() {
+        if (this.running) return;
+        this.running = true;
+        this._intervalId = setInterval(() => {
+          this.totalClips += this.productionRate;
+          log(`[${this.name}] Graffette totali: ${this.totalClips}`);
+        }, 1000);
+      }
+
+      stopProduction() {
+        if (!this.running) return;
+        clearInterval(this._intervalId);
+        this._intervalId = null;
+        this.running = false;
+        log(`[${this.name}] Produzione fermata.`);
+      }
+
+      resetProduction() {
+        this.totalClips = 0;
+        log(`[${this.name}] Conteggio graffette azzerato.`);
+      }
+
+      status() {
+        return {
+          name: this.name,
+          running: this.running,
+          productionRate: this.productionRate,
+          totalClips: this.totalClips
+        };
+      }
+
+      boostProduction(multiplier, durationSeconds) {
+        if (!this.running) {
+          log(`[${this.name}] Produzione non attiva. Avviare prima la produzione.`);
+          return;
+        }
+
+        const originalRate = this.productionRate;
+        this.productionRate *= multiplier;
+        log(`[${this.name}] Produzione potenziata a ${this.productionRate} graffette/sec per ${durationSeconds} secondi.`);
+
+        setTimeout(() => {
+          this.productionRate = originalRate;
+          log(`[${this.name}] Produzione tornata a ${this.productionRate} graffette/sec.`);
+        }, durationSeconds * 1000);
+      }
+    }
+
+    const factory = new ClipProducer("Fabbrica A", 5);
+
+    function mostraStato() {
+      const stato = factory.status();
+      log(`\n📊 Stato Fabbrica:\nNome: ${stato.name}\nProduzione: ${stato.running ? "Attiva" : "Fermata"}\nVelocità: ${stato.productionRate}/s\nTotale: ${stato.totalClips}`);
+    }
+
+    function log(msg) {
+      const output = document.getElementById("output");
+      output.textContent += msg + "\n";
+    }
+  </script>
+</body>
+</html>
