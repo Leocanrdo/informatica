@@ -29,7 +29,7 @@
       border: 2px solid #333;
     }
     .green {
-      background-color: green !important;
+      background-color: green !important; /* Stile per la casella verde (giusta) */
     }
     .reaction-box {
       width: 300px;
@@ -65,12 +65,16 @@
       padding: 8px;
       width: 200px;
     }
+    .result-list {
+      margin-top: 20px;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
 
 <div class="content">
-  <!-- User Info Form -->
+  <!-- Form di inserimento informazioni utente -->
   <div id="userInfo" class="user-info-box">
     <h2>Benvenuto! Inserisci il tuo nome, cognome ed età</h2>
     <label for="userName">Nome</label>
@@ -82,126 +86,172 @@
     <label for="userAge">Età</label>
     <input type="number" id="userAge" placeholder="Età" required>
 
-    <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button>
+    <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button> <!-- Invio delle informazioni -->
   </div>
 
-  <!-- Test Content -->
+  <!-- Contenuto del test (nascondiamo questo fino al submit delle info) -->
   <div id="testContent" style="display:none;">
     <h1>Test di Reazione - Colori</h1>
-    <button id="startButton" onclick="startCountdown()">Inizia il Test</button>
-    <div id="countdown"></div>
-    <div class="color-grid" id="colorGrid"></div>
+    <button id="startButton" onclick="startCountdown()">Inizia il Test</button> <!-- Bottone per avviare il countdown -->
+    <div id="countdown"></div> <!-- Mostra il countdown -->
+    <div class="color-grid" id="colorGrid"></div> <!-- Rete di caselle di colore -->
   </div>
 </div>
 
-<!-- Reaction Time and Results -->
+<!-- Risultati del test -->
 <div class="reaction-box">
   <h3>Tempo di Reazione</h3>
   <p id="reactionTimeDisplay">Nessun dato disponibile</p>
   <h3>Media dei Tempi</h3>
   <p id="averageTimeDisplay">Nessuna media disponibile</p>
   <h3>Risultati</h3>
-  <ul id="resultList"></ul>
+  <ul id="resultList"></ul> <!-- Visualizza risultati dei tentativi -->
+  
+  <!-- Bottone per vedere tutti i risultati -->
+  <button id="viewResultsButton" onclick="viewResults()">Visualizza Tutti i Risultati</button> 
+
+  <!-- Contenuto per visualizzare la lista completa dei risultati -->
+  <div class="result-list" id="resultListContainer" style="display: none;">
+    <h3>Storico Risultati</h3>
+    <ul id="allResults"></ul> <!-- Lista di tutti i risultati salvati -->
+  </div>
 </div>
 
 <script>
+  // Array globale per salvare i risultati
   const reactionTimes = [];
-  let startTime = null;
-  let correctBox = null;
-  let countdownInterval = null;
-  let countdownValue = 3;
-  let userName = "";
+  const results = []; // Array che salva il nome, cognome, età e tempo di reazione
+  let startTime = null; // Variabile per memorizzare l'orario di inizio del tentativo
+  let correctBox = null; // Variabile per memorizzare la casella verde (quella corretta)
+  let countdownInterval = null; // Variabile per il countdown
+  let countdownValue = 3; // Impostazione countdown a 3 secondi
+  let userName = ""; // Variabili per nome, cognome e età
   let userSurname = "";
   let userAge = "";
 
-  let attemptCount = 0;
-  const maxAttempts = 5;
-  let canClick = false;
+  let attemptCount = 0; // Contatore per il numero di tentativi
+  const maxAttempts = 5; // Numero massimo di tentativi
+  let canClick = false; // Variabile per impedire il click prematuro
 
+  // Funzione per salvare le informazioni dell'utente e mostrare il test
   function saveUserInfo() {
-    userName = document.getElementById("userName").value.trim();
-    userSurname = document.getElementById("userSurname").value.trim();
-    userAge = document.getElementById("userAge").value.trim();
+    userName = document.getElementById("userName").value.trim(); // Ottieni il nome
+    userSurname = document.getElementById("userSurname").value.trim(); // Ottieni il cognome
+    userAge = document.getElementById("userAge").value.trim(); // Ottieni l'età
 
+    // Se tutte le informazioni sono presenti, nascondiamo il form e mostriamo il test
     if (userName && userSurname && userAge) {
-      document.getElementById("userInfo").style.display = "none";
-      document.getElementById("testContent").style.display = "block";
-      alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`);
+      document.getElementById("userInfo").style.display = "none"; // Nascondi il form di input
+      document.getElementById("testContent").style.display = "block"; // Mostra il contenuto del test
+      alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`); // Messaggio di benvenuto
     } else {
-      alert("Per favore, compila tutti i campi.");
+      alert("Per favore, compila tutti i campi."); // Avviso se i campi non sono completi
     }
   }
 
+  // Funzione che avvia il countdown prima del test
   function startCountdown() {
-    if (attemptCount >= maxAttempts) {
+    if (attemptCount >= maxAttempts) { // Se sono stati completati tutti i tentativi
       alert("Hai già completato tutti i tentativi.");
       return;
     }
 
-    document.getElementById("startButton").disabled = true;
-    document.getElementById("countdown").textContent = countdownValue;
+    document.getElementById("startButton").disabled = true; // Disabilita il bottone per evitare doppio click
+    document.getElementById("countdown").textContent = countdownValue; // Mostra il countdown
 
+    // Countdown che decrementa ogni secondo
     countdownInterval = setInterval(() => {
       countdownValue--;
       document.getElementById("countdown").textContent = countdownValue;
 
-      if (countdownValue <= 0) {
-        clearInterval(countdownInterval);
-        document.getElementById("countdown").textContent = "";
-        countdownValue = 3;
-        showColorGrid();
+      if (countdownValue <= 0) { // Quando il countdown arriva a 0, inizia il test
+        clearInterval(countdownInterval); // Ferma il countdown
+        document.getElementById("countdown").textContent = ""; // Pulisci il display del countdown
+        countdownValue = 3; // Ripristina il valore del countdown
+        showColorGrid(); // Mostra la griglia di colori
       }
     }, 1000);
   }
 
+  // Funzione che genera la griglia dei colori
   function showColorGrid() {
     const grid = document.getElementById("colorGrid");
-    grid.innerHTML = "";
-    canClick = true;
+    grid.innerHTML = ""; // Pulisce la griglia precedente
+    canClick = true; // Consenti i click sulle caselle
 
+    // Crea 9 caselle nella griglia
     for (let i = 0; i < 9; i++) {
       const box = document.createElement("div");
-      box.classList.add("color-box");
-      box.onclick = () => handleBoxClick(box);
+      box.classList.add("color-box"); // Aggiungi la classe per lo stile
+      box.onclick = () => handleBoxClick(box); // Aggiungi l'evento click per ogni casella
       grid.appendChild(box);
     }
 
+    // Seleziona una casella a caso come la casella verde (corretta)
     const randomIndex = Math.floor(Math.random() * 9);
     correctBox = grid.children[randomIndex];
-    correctBox.classList.add("green");
-    startTime = performance.now();
+    correctBox.classList.add("green"); // Imposta il colore verde per la casella corretta
+    startTime = performance.now(); // Salva l'orario di inizio per calcolare il tempo di reazione
   }
 
+  // Funzione che gestisce il click sulla casella
   function handleBoxClick(box) {
-    if (!canClick) return;
-    canClick = false;
+    if (!canClick) return; // Se non è permesso cliccare, esci dalla funzione
+    canClick = false; // Impedisce ulteriori click fino al prossimo tentativo
 
-    const endTime = performance.now();
-    const reactionTime = (endTime - startTime) / 1000;
+    const endTime = performance.now(); // Ottieni l'orario di fine
+    const reactionTime = (endTime - startTime) / 1000; // Calcola il tempo di reazione in secondi
 
-    if (box === correctBox) {
-      reactionTimes.push(reactionTime);
-      attemptCount++;
+    if (box === correctBox) { // Se la casella cliccata è quella corretta
+      reactionTimes.push(reactionTime); // Aggiungi il tempo di reazione all'array
+      attemptCount++; // Incrementa il numero di tentativi
 
+      // Mostra il tempo di reazione
       document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} s`;
 
+      // Calcola la media dei tempi di reazione
       const averageTime = reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length;
       document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} s`;
 
+      // Aggiungi il risultato all'elenco
       const resultItem = document.createElement("li");
       resultItem.textContent = `Tentativo ${attemptCount}: ${reactionTime.toFixed(3)} s`;
       document.getElementById("resultList").appendChild(resultItem);
+
+      // Aggiungi il risultato globale nell'array
+      results.push({
+        nome: userName,
+        cognome: userSurname,
+        età: userAge,
+        tempo: reactionTime.toFixed(3)
+      });
     } else {
-      document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`;
+      document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`; // Messaggio se si clicca la casella sbagliata
     }
 
+    // Se sono stati completati i tentativi, abilita nuovamente il bottone
     if (attemptCount < maxAttempts) {
       setTimeout(() => {
         document.getElementById("startButton").disabled = false;
       }, 500);
     } else {
-      alert("Hai completato il test! Bravo!");
+      alert("Hai completato il test! Bravo!"); // Messaggio di completamento
     }
+  }
+
+  // Funzione per visualizzare tutti i risultati salvati
+  function viewResults() {
+    const resultListContainer = document.getElementById("resultListContainer");
+    const allResultsList = document.getElementById("allResults");
+
+    allResultsList.innerHTML = ""; // Pulisce la lista esistente
+    results.forEach(result => {
+      const resultItem = document.createElement("li");
+      resultItem.textContent = `${result.nome} ${result.cognome} (Età: ${result.età}) - Tempo di reazione: ${result.tempo} s`;
+      allResultsList.appendChild(resultItem); // Aggiungi ogni risultato all'elenco
+    });
+
+    resultListContainer.style.display = "block"; // Mostra la sezione con tutti i risultati
   }
 </script>
 
