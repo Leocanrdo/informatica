@@ -4,77 +4,13 @@
   <meta charset="UTF-8">
   <title>Test di Reazione - Colori</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 50px;
-    }
-    .content {
-      text-align: center;
-    }
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 80px);
-      grid-gap: 10px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .color-box {
-      width: 80px;
-      height: 80px;
-      background-color: red;
-      cursor: pointer;
-      border: 2px solid #333;
-    }
-    .green {
-      background-color: green !important; /* Stile per la casella verde (giusta) */
-    }
-    .reaction-box {
-      width: 300px;
-      padding: 20px;
-      border: 1px solid #333;
-      text-align: center;
-      background-color: #f9f9f9;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      margin: 10px 5px;
-    }
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-    #countdown {
-      font-size: 32px;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .user-info-box input {
-      display: block;
-      margin: 10px auto;
-      padding: 8px;
-      width: 200px;
-    }
-    .result-list {
-      margin-top: 20px;
-      text-align: left;
-    }
+    /* Stili CSS (vedi sezione successiva) */
   </style>
 </head>
 <body>
 
 <div class="content">
-  <!-- Form di inserimento informazioni utente -->
+  <!-- Sezione per raccogliere le informazioni dell'utente -->
   <div id="userInfo" class="user-info-box">
     <h2>Benvenuto! Inserisci il tuo nome, cognome ed età</h2>
     <label for="userName">Nome</label>
@@ -86,139 +22,135 @@
     <label for="userAge">Età</label>
     <input type="number" id="userAge" placeholder="Età" required>
 
-    <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button> <!-- Invio delle informazioni -->
+    <button id="submitUserInfo" onclick="saveUserInfo()">Invia</button>
   </div>
 
-  <!-- Contenuto del test (nascondiamo questo fino al submit delle info) -->
+  <!-- Sezione del test, visibile solo dopo l'inserimento dei dati -->
   <div id="testContent" style="display:none;">
     <h1>Test di Reazione - Colori</h1>
-    <button id="startButton" onclick="startCountdown()">Inizia il Test</button> <!-- Bottone per avviare il countdown -->
-    <div id="countdown"></div> <!-- Mostra il countdown -->
-    <div class="color-grid" id="colorGrid"></div> <!-- Rete di caselle di colore -->
+    <button id="startButton" onclick="startCountdown()">Inizia il Test</button>
+    <div class="color-grid" id="colorGrid"></div>
+    <div id="countdown"></div> <!-- Countdown spostato qui -->
   </div>
 </div>
 
-<!-- Risultati del test -->
+<!-- Sezione per i risultati del test e lo storico -->
 <div class="reaction-box">
   <h3>Tempo di Reazione</h3>
   <p id="reactionTimeDisplay">Nessun dato disponibile</p>
   <h3>Media dei Tempi</h3>
   <p id="averageTimeDisplay">Nessuna media disponibile</p>
   <h3>Risultati</h3>
-  <ul id="resultList"></ul> <!-- Visualizza risultati dei tentativi -->
-  
-  <!-- Bottone per vedere tutti i risultati -->
-  <button id="viewResultsButton" onclick="viewResults()">Visualizza Tutti i Risultati</button> 
+  <ul id="resultList"></ul>
 
-  <!-- Contenuto per visualizzare la lista completa dei risultati -->
+  <!-- Bottone per visualizzare tutti i risultati -->
+  <button id="viewResultsButton" onclick="viewResults()">Visualizza Tutti i Risultati</button>
+  
+  <!-- Bottone per iniziare un nuovo test con un altro utente -->
+  <button onclick="resetForNewUser()">Nuovo Utente</button>
+
+  <!-- Sezione per visualizzare lo storico dei risultati -->
   <div class="result-list" id="resultListContainer" style="display: none;">
     <h3>Storico Risultati</h3>
-    <ul id="allResults"></ul> <!-- Lista di tutti i risultati salvati -->
+    <ul id="allResults"></ul>
   </div>
 </div>
 
 <script>
-  // Array globale per salvare i risultati
+  /* Dichiarazione delle variabili globali */
   const reactionTimes = [];
-  const results = []; // Array che salva il nome, cognome, età e tempo di reazione
-  let startTime = null; // Variabile per memorizzare l'orario di inizio del tentativo
-  let correctBox = null; // Variabile per memorizzare la casella verde (quella corretta)
-  let countdownInterval = null; // Variabile per il countdown
-  let countdownValue = 3; // Impostazione countdown a 3 secondi
-  let userName = ""; // Variabili per nome, cognome e età
+  const results = [];
+  let startTime = null;
+  let correctBox = null;
+  let countdownInterval = null;
+  let countdownValue = 3;
+  let userName = "";
   let userSurname = "";
   let userAge = "";
+  let attemptCount = 0;
+  const maxAttempts = 5;
+  let canClick = false;
 
-  let attemptCount = 0; // Contatore per il numero di tentativi
-  const maxAttempts = 5; // Numero massimo di tentativi
-  let canClick = false; // Variabile per impedire il click prematuro
-
-  // Funzione per salvare le informazioni dell'utente e mostrare il test
+  /* Funzione per salvare i dati dell'utente e avviare il test */
   function saveUserInfo() {
-    userName = document.getElementById("userName").value.trim(); // Ottieni il nome
-    userSurname = document.getElementById("userSurname").value.trim(); // Ottieni il cognome
-    userAge = document.getElementById("userAge").value.trim(); // Ottieni l'età
+    userName = document.getElementById("userName").value.trim();
+    userSurname = document.getElementById("userSurname").value.trim();
+    userAge = document.getElementById("userAge").value.trim();
 
-    // Se tutte le informazioni sono presenti, nascondiamo il form e mostriamo il test
     if (userName && userSurname && userAge) {
-      document.getElementById("userInfo").style.display = "none"; // Nascondi il form di input
-      document.getElementById("testContent").style.display = "block"; // Mostra il contenuto del test
-      alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`); // Messaggio di benvenuto
+      document.getElementById("userInfo").style.display = "none";  // Nascondi la sezione dell'input
+      document.getElementById("testContent").style.display = "block"; // Mostra il test
+      alert(`Ciao ${userName} ${userSurname}, benvenuto nel test di reazione!`);
     } else {
-      alert("Per favore, compila tutti i campi."); // Avviso se i campi non sono completi
+      alert("Per favore, compila tutti i campi.");
     }
   }
 
-  // Funzione che avvia il countdown prima del test
+  /* Funzione per avviare il countdown prima di iniziare il test */
   function startCountdown() {
-    if (attemptCount >= maxAttempts) { // Se sono stati completati tutti i tentativi
+    if (attemptCount >= maxAttempts) {
       alert("Hai già completato tutti i tentativi.");
       return;
     }
 
-    document.getElementById("startButton").disabled = true; // Disabilita il bottone per evitare doppio click
+    document.getElementById("startButton").disabled = true; // Disabilita il bottone per evitare clic multipli
     document.getElementById("countdown").textContent = countdownValue; // Mostra il countdown
 
-    // Countdown che decrementa ogni secondo
     countdownInterval = setInterval(() => {
       countdownValue--;
       document.getElementById("countdown").textContent = countdownValue;
 
-      if (countdownValue <= 0) { // Quando il countdown arriva a 0, inizia il test
+      if (countdownValue <= 0) { // Se il countdown arriva a 0, avvia il test
         clearInterval(countdownInterval); // Ferma il countdown
-        document.getElementById("countdown").textContent = ""; // Pulisci il display del countdown
-        countdownValue = 3; // Ripristina il valore del countdown
+        document.getElementById("countdown").textContent = "";
+        countdownValue = 3; // Ripristina il countdown
         showColorGrid(); // Mostra la griglia di colori
       }
     }, 1000);
   }
 
-  // Funzione che genera la griglia dei colori
+  /* Funzione per generare la griglia di colori e selezionare un quadrato verde */
   function showColorGrid() {
     const grid = document.getElementById("colorGrid");
-    grid.innerHTML = ""; // Pulisce la griglia precedente
-    canClick = true; // Consenti i click sulle caselle
+    grid.innerHTML = "";  // Pulisce la griglia precedente
+    canClick = true;  // Abilita i click sulle caselle
 
-    // Crea 9 caselle nella griglia
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 9; i++) {  // Crea 9 quadrati
       const box = document.createElement("div");
-      box.classList.add("color-box"); // Aggiungi la classe per lo stile
-      box.onclick = () => handleBoxClick(box); // Aggiungi l'evento click per ogni casella
+      box.classList.add("color-box");
+      box.onclick = () => handleBoxClick(box); // Assegna l'evento di clic
       grid.appendChild(box);
     }
 
-    // Seleziona una casella a caso come la casella verde (corretta)
+    // Seleziona un quadrato casuale come il quadrato verde (corretto)
     const randomIndex = Math.floor(Math.random() * 9);
     correctBox = grid.children[randomIndex];
-    correctBox.classList.add("green"); // Imposta il colore verde per la casella corretta
-    startTime = performance.now(); // Salva l'orario di inizio per calcolare il tempo di reazione
+    correctBox.classList.add("green"); // Imposta il quadrato verde
+    startTime = performance.now(); // Salva il momento di inizio
   }
 
-  // Funzione che gestisce il click sulla casella
+  /* Funzione che gestisce il click sui quadrati */
   function handleBoxClick(box) {
-    if (!canClick) return; // Se non è permesso cliccare, esci dalla funzione
-    canClick = false; // Impedisce ulteriori click fino al prossimo tentativo
+    if (!canClick) return;  // Se non è il momento di cliccare, esci dalla funzione
+    canClick = false;  // Disabilita i click successivi fino al prossimo tentativo
 
-    const endTime = performance.now(); // Ottieni l'orario di fine
-    const reactionTime = (endTime - startTime) / 1000; // Calcola il tempo di reazione in secondi
+    const endTime = performance.now();  // Ottieni il tempo di fine
+    const reactionTime = (endTime - startTime) / 1000;  // Calcola il tempo di reazione
 
-    if (box === correctBox) { // Se la casella cliccata è quella corretta
-      reactionTimes.push(reactionTime); // Aggiungi il tempo di reazione all'array
-      attemptCount++; // Incrementa il numero di tentativi
+    if (box === correctBox) {  // Se il quadrato cliccato è quello corretto
+      reactionTimes.push(reactionTime);  // Aggiungi il tempo di reazione all'array
+      attemptCount++;  // Incrementa il numero dei tentativi
 
-      // Mostra il tempo di reazione
-      document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} s`;
+      document.getElementById("reactionTimeDisplay").textContent = `Tempo di reazione: ${reactionTime.toFixed(3)} s`;  // Mostra il tempo
+      const averageTime = reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length;  // Calcola la media dei tempi
+      document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} s`;  // Mostra la media
 
-      // Calcola la media dei tempi di reazione
-      const averageTime = reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length;
-      document.getElementById("averageTimeDisplay").textContent = `Media dei tempi: ${averageTime.toFixed(3)} s`;
-
-      // Aggiungi il risultato all'elenco
+      // Aggiungi il risultato dell'attuale tentativo
       const resultItem = document.createElement("li");
       resultItem.textContent = `Tentativo ${attemptCount}: ${reactionTime.toFixed(3)} s`;
       document.getElementById("resultList").appendChild(resultItem);
 
-      // Aggiungi il risultato globale nell'array
+      // Aggiungi i dati all'array globale dei risultati
       results.push({
         nome: userName,
         cognome: userSurname,
@@ -226,32 +158,69 @@
         tempo: reactionTime.toFixed(3)
       });
     } else {
-      document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`; // Messaggio se si clicca la casella sbagliata
+      document.getElementById("reactionTimeDisplay").textContent = `Hai cliccato il quadrato sbagliato!`;
     }
 
-    // Se sono stati completati i tentativi, abilita nuovamente il bottone
+    // Disabilita il bottone se sono stati completati tutti i tentativi
     if (attemptCount < maxAttempts) {
       setTimeout(() => {
         document.getElementById("startButton").disabled = false;
       }, 500);
     } else {
-      alert("Hai completato il test! Bravo!"); // Messaggio di completamento
+      alert("Hai completato il test! Bravo!");
     }
   }
 
-  // Funzione per visualizzare tutti i risultati salvati
+  /* Funzione per visualizzare tutti i risultati */
   function viewResults() {
     const resultListContainer = document.getElementById("resultListContainer");
     const allResultsList = document.getElementById("allResults");
 
-    allResultsList.innerHTML = ""; // Pulisce la lista esistente
+    allResultsList.innerHTML = "";  // Pulisce la lista
+
     results.forEach(result => {
       const resultItem = document.createElement("li");
       resultItem.textContent = `${result.nome} ${result.cognome} (Età: ${result.età}) - Tempo di reazione: ${result.tempo} s`;
-      allResultsList.appendChild(resultItem); // Aggiungi ogni risultato all'elenco
+      allResultsList.appendChild(resultItem);
     });
 
-    resultListContainer.style.display = "block"; // Mostra la sezione con tutti i risultati
+    // Calcola il vincitore (l'utente con il tempo di reazione più veloce)
+    if (results.length > 0) {
+      const vincitore = results.reduce((min, current) => {
+        return parseFloat(current.tempo) < parseFloat(min.tempo) ? current : min;
+      });
+
+      const winnerText = document.createElement("p");
+      winnerText.style.marginTop = "15px";
+      winnerText.style.fontWeight = "bold";
+      winnerText.textContent = `🏆 Vincitore: ${vincitore.nome} ${vincitore.cognome} con ${vincitore.tempo} secondi!`;
+      allResultsList.appendChild(winnerText);
+    }
+
+    resultListContainer.style.display = "block";  // Mostra i risultati
+  }
+
+  /* Funzione per azzerare i dati e iniziare con un nuovo utente */
+  function resetForNewUser() {
+    userName = "";
+    userSurname = "";
+    userAge = "";
+    attemptCount = 0;
+    reactionTimes.length = 0;
+
+    document.getElementById("userName").value = "";
+    document.getElementById("userSurname").value = "";
+    document.getElementById("userAge").value = "";
+
+    document.getElementById("reactionTimeDisplay").textContent = "Nessun dato disponibile";
+    document.getElementById("averageTimeDisplay").textContent = "Nessuna media disponibile";
+    document.getElementById("resultList").innerHTML = "";
+    document.getElementById("testContent").style.display = "none";
+    document.getElementById("userInfo").style.display = "block";
+    document.getElementById("colorGrid").innerHTML = "";
+    document.getElementById("countdown").textContent = "";
+
+    document.getElementById("startButton").disabled = false;
   }
 </script>
 
