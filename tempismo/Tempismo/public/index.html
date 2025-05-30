@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gioco di Riflessi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .game-container {
+            flex: 1;
+        }
+
+        .scoreboard {
+            width: 300px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 300px;
+            background-color: #333;
+            position: relative;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .light {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ff0000;
+        }
+
+        .light.green {
+            background-color: #00ff00;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .score-item {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        #playerName {
+            padding: 8px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Test dei Riflessi</h1>
+        <div>
+            <input type="text" id="playerName" placeholder="Inserisci il tuo nome" required>
+        </div>
+        <div class="game-area">
+            <div class="light"></div>
+        </div>
+        <button id="startButton">Inizia</button>
+        <p id="result"></p>
+    </div>
+
+    <div class="scoreboard">
+        <h2>Classifica</h2>
+        <div id="scoresList"></div>
+    </div>
+
+    <script>
+        let gameActive = false;
+        let startTime;
+        let timeoutId;
+
+        const gameArea = document.querySelector('.game-area');
+        const light = document.querySelector('.light');
+        const startButton = document.getElementById('startButton');
+        const result = document.getElementById('result');
+        const playerNameInput = document.getElementById('playerName');
+
+        startButton.addEventListener('click', startGame);
+        gameArea.addEventListener('click', handleClick);
+
+        function startGame() {
+            if (!playerNameInput.value.trim()) {
+                alert('Per favore inserisci il tuo nome prima di iniziare!');
+                return;
+            }
+
+            gameActive = true;
+            startButton.disabled = true;
+            light.classList.remove('green');
+            result.textContent = 'Aspetta che il semaforo diventi verde...';
+
+            // Tempo casuale tra 2 e 5 secondi
+            const delay = Math.random() * 3000 + 2000;
+            timeoutId = setTimeout(() => {
+                if (gameActive) {
+                    light.classList.add('green');
+                    startTime = Date.now();
+                }
+            }, delay);
+        }
+
+        function handleClick() {
+            if (!gameActive) return;
+
+            if (!light.classList.contains('green')) {
+                // Click troppo presto
+                gameActive = false;
+                clearTimeout(timeoutId);
+                result.textContent = 'Troppo presto! Riprova.';
+                startButton.disabled = false;
+            } else {
+                // Click corretto
+                const reactionTime = Date.now() - startTime;
+                gameActive = false;
+                light.classList.remove('green');
+                result.textContent = `Tempo di reazione: ${reactionTime}ms`;
+                startButton.disabled = false;
+
+                // Salva il punteggio
+                saveScore(playerNameInput.value, reactionTime);
+            }
+        }
+
+        async function saveScore(name, score) {
+            try {
+                await fetch('/api/scores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, score })
+                });
+                updateScoreboard();
+            } catch (error) {
+                console.error('Errore nel salvare il punteggio:', error);
+            }
+        }
+
+        async function updateScoreboard() {
+            try {
+                const response = await fetch('/api/scores');
+                const scores = await response.json();
+                const scoresList = document.getElementById('scoresList');
+                
+                scoresList.innerHTML = scores
+                    .map((score, index) => `
+                        <div class="score-item">
+                            ${index + 1}. ${score.name}: ${score.score}ms
+                        </div>
+                    `)
+                    .join('');
+            } catch (error) {
+                console.error('Errore nel caricare i punteggi:', error);
+            }
+        }
+
+        // Carica la classifica all'avvio
+        updateScoreboard();
+    </script>
+</body>
+</html>
